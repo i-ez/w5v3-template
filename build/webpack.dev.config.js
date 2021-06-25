@@ -1,3 +1,5 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
 module.exports = {
   mode: 'development',
   module: {
@@ -18,4 +20,10 @@ module.exports = {
     open: true,
     port: 1024,
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'W5V3',
+      template: './public/index.html'
+    }),
+  ]
 }
