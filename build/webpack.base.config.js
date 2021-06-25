@@ -1,5 +1,6 @@
 const path = require('path')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const notifier = require('node-notifier')
 const { VueLoaderPlugin } = require('vue-loader/dist/index')
 
 module.exports = {
@@ -51,7 +52,21 @@ module.exports = {
   },
   plugins: [
     new VueLoaderPlugin(),
-    new FriendlyErrorsPlugin()
+    new FriendlyErrorsPlugin({
+      // 运行成功
+      compilationSuccessInfo: {
+        // message: ['App running at：\n -Local: http://localhost:1024'],
+        notes: ['App running at：\n -Local: http://localhost:1024']
+      },
+      onErrors: (severity, errors) => {
+        notifier.notify({
+          title: 'webpack 编译失败了~',
+          message: `${severity} ${errors[0].name}`,
+          subtitle: errors[0].file || '',
+          // icon,
+        })
+      },
+    })
   ],
   stats: 'errors-warnings'
 }
