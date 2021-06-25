@@ -13,4 +13,9 @@ module.exports = {
     ]
   },
   devtool: 'eval-cheap-module-source-map',// webpack5 修改了校验规则
+  devServer: {
+    hot: true,
+    open: true,
+    port: 1024,
+  },
 }
