@@ -2,6 +2,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 module.exports = {
   mode: 'production',
@@ -34,6 +35,14 @@ module.exports = {
           'less-loader'
         ]
       },
+    ]
+  },
+  optimization: {
+    usedExports: true,
+    // 压缩js代码
+    minimize: true,
+    minimizer: [
+      new TerserWebpackPlugin()
     ]
   },
   plugins: [
