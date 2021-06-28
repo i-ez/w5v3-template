@@ -521,7 +521,9 @@ createApp(App).mount('#app')
 
 ### 打包友好提示
 
-使用 friendly-errors-webpack-plugin 插件配合 stats：'errors-warnings'，去除每次打包控制台不必要的输出，只在有错误和警告时输出信息。
+> webpack-dev-server4 现在还处于 beta 阶段，[clientLogLevel](https://www.webpackjs.com/configuration/dev-server/#devserver-clientloglevel) 属性可以在开发阶段控制 console 输出，但现在该功能还未实现。
+
+使用 friendly-errors-webpack-plugin 插件配合 stats：'errors-warnings'，去除每次打包控制台不必要的输出，只在有错误和警告时输出信息。node-notifier 会把错误信息投屏到浏览器。
 
 安装依赖
 
@@ -552,8 +554,6 @@ const notifier = require('node-notifier')
   ],
 + stats: 'errors-warnings'
 ```
-
-> node-notifier 可以将错误信息投屏到浏览器
 
 ### 配置 eslint
 
