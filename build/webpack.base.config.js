@@ -55,7 +55,7 @@ module.exports = {
     new FriendlyErrorsPlugin({
       // 运行成功
       compilationSuccessInfo: {
-        // message: ['App running at：\n -Local: http://localhost:1024'],
+        message: ['App running at：\n -Local: http://localhost:1024'],
         notes: ['App running at：\n -Local: http://localhost:1024']
       },
       onErrors: (severity, errors) => {
@@ -66,6 +66,7 @@ module.exports = {
           // icon,
         })
       },
+      clearConsole: true,
     })
   ],
   stats: 'errors-warnings'
