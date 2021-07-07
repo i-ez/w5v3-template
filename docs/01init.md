@@ -432,7 +432,7 @@ module.exports = {
 yarn add -D terser-webpack-plugin
 ```
 
-修改 webpack.prod.config.js，添加 optimization 项
+修改 webpack.prod.config.js 中 optimization 项
 
 ```
 // webpack.prod.config.js
@@ -562,6 +562,8 @@ const notifier = require('node-notifier')
   ],
 + stats: 'errors-warnings'
 ```
+
+## 规范项目代码
 
 ### 配置 eslint
 
