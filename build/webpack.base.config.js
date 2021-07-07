@@ -34,19 +34,19 @@ module.exports = {
         }
       },
       {
-        test: /\.(jpg|png|jpeg|gif|bmp)$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            name: '[name]-[hash:8].[ext]',
-            outputPath: 'images/',
-            limit: 10240,
-          }
-        }
+        test: /\.(png|jpg|svg|gif)$/,
+        type: 'asset/resource',
+        generator: {
+          // [ext]前面自带"."
+          filename: 'assets/[hash:8].[name][ext]',
+        },
       },
       {
         test: /\.(ttf|svg|eot|woff|woff2)$/,
-        use: 'url-loader'
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[hash:8].[name][ext]',
+        },
       }
     ]
   },

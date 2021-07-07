@@ -1,7 +1,7 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 module.exports = {
@@ -42,7 +42,8 @@ module.exports = {
     // 压缩js代码
     minimize: true,
     minimizer: [
-      new TerserWebpackPlugin()
+      new TerserWebpackPlugin(),
+      new CssMinimizerPlugin()
     ]
   },
   plugins: [
@@ -58,13 +59,6 @@ module.exports = {
         minifyCSS: true // 压缩内联css
       },
       cache: true
-    }),
-    // CSS文件压缩
-    new OptimizeCSSAssetsPlugin({
-      cssProcessor: require('cssnano'), // OptimizeCSSAssetsPlugin插件默认也是使用cssnano
-      cssProcessorOptions: {
-        discardComments: { removeAll: true }
-      }
     }),
     // 提取单独CSS文件
     new MiniCssExtractPlugin({
