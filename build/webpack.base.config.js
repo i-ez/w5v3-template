@@ -4,7 +4,7 @@ const notifier = require('node-notifier')
 const { VueLoaderPlugin } = require('vue-loader/dist/index')
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/main.js',
   output: {
     filename: 'app.[contenthash:8].js',
     path: path.resolve(process.cwd(), 'dist')
