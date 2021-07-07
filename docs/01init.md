@@ -13,7 +13,7 @@ git init
 yarn add -D webpack webpack-cli webpack-merge
 ```
 
-### 为 webpack 配置不同模式的配置文件
+### 为不同环境创建独立的 webpack 配置文件
 
 在项目根目录 build 文件夹，在其中创建 webpack.base.config.js、webpack.dev.config.js、webpack.prod.config.js 三个文件。
 
@@ -24,7 +24,7 @@ yarn add -D webpack webpack-cli webpack-merge
 const path = require('path')
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/main.js',
   output: {
     filename: 'app.[contenthash:8].js',
     path: path.resolve(process.cwd(), 'dist')
@@ -32,7 +32,7 @@ module.exports = {
 }
 ```
 
-在项目根目录新建 src 文件夹，并在 src 内创建 index.js 项目入口文件
+在项目根目录新建 src 文件夹，并在 src 内创建 main.js 项目入口文件
 
 > webapck.dev.config.js 存放开发环境配置代码
 
@@ -134,9 +134,7 @@ module: {
 
 ## 解析字体、图片资源
 
-```
-yarn add -D url-loader
-```
+Webpack5 提供了内置的静态资源构建能力，我们不需要安装额外的 loader，仅需要简单的配置就能实现静态资源的打包和分目录存放。如下：满足规则匹配的资源就能够被存放在 assets 文件夹下面。
 
 修改 webpack.base.config.js
 
@@ -144,22 +142,29 @@ yarn add -D url-loader
 rules: [
   ...
     {
-        test: /\.(jpg|png|jpeg|gif|bmp)$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            name: '[name]-[hash:8].[ext]',
-            outputPath: 'images/',
-            limit: 10240,
-          }
-        }
+      test: /\.(png|jpg|svg|gif)$/,
+      type: 'asset/inline',
+      generator: {
+        // [ext]前面自带"."
+        filename: 'assets/[hash:8].[name][ext]',
       },
-      {
-        test: /\.(ttf|svg|eot|woff|woff2)$/,
-        use: 'url-loader'
-      }
+    },
+    {
+      test: /\.(ttf|svg|eot|woff|woff2)$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'assets/[hash:8].[name][ext]',
+      },
+    }
   ]
 ```
+
+其中 type 取值如下几种：
+
+- asset/source ——功能相当于 raw-loader。
+- asset/inline——功能相当于 url-loader，若想要设置编码规则，可以在 generator 中设置 dataUrl。具体可参见官方文档[10]。
+- asset/resource——功能相当于 file-loader。
+- asset—— 默认会根据文件大小来选择使用哪种类型，当文件小于 8 KB 的时候会使用 asset/inline，否则会使用 asset/resource。也可手动进行阈值的设定，具体可以参考官方文档
 
 ## 开启 source-map
 
@@ -312,10 +317,12 @@ module: {
 
 开发环境下，经过层层处理的 css 样式代码，会被 style-loader 用\<style>标签插入到 HTML 文件的头部\<head>标签内。
 
-生产环境因为需要压缩并提取单独的 css 文件，所以不使用 style-loader，这里需要安装 optimize-css-assets-webpack-plugin 插件进行 css 代码压缩，安装 mini-css-extract-plugin 插件进行 css 代码提取
+生产环境因为需要压缩并提取单独的 css 文件，所以不使用 style-loader，这里需要安装 [css-minimizer-webpack-plugin](https://github.com/webpack-contrib/css-minimizer-webpack-plugin) 插件进行 css 代码压缩，安装 mini-css-extract-plugin 插件进行 css 代码提取
+
+> 注意：平时用来压缩 CSS 的 optimize-css-assets-webpack-plugin，在 Plugin Github 首页中也明确表示了在 Webpack5 之后优先使用 Webpack 官方出品的 css-minimizer-webpack-plugin
 
 ```
-yarn add -D optimize-css-assets-webpack-plugin mini-css-extract-plugin
+yarn add -D css-minimizer-webpack-plugin mini-css-extract-plugin
 ```
 
 修改 webpack.prod.config.js 文件
@@ -324,7 +331,7 @@ yarn add -D optimize-css-assets-webpack-plugin mini-css-extract-plugin
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 
 module.exports = {
   mode: 'production',
@@ -359,6 +366,13 @@ module.exports = {
       },
     ]
   },
+  optimization: {
+    // 开启代码压缩
+    minimize: true,
+    minimizer: [
+      new CssMinimizerPlugin()
+    ]
+  },
   plugins: [
     new HtmlWebpackPlugin({
       title: 'W5V3',
@@ -372,13 +386,6 @@ module.exports = {
         minifyCSS: true // 压缩内联css
       },
       cache: true
-    }),
-    // CSS文件压缩
-    new OptimizeCSSAssetsPlugin({
-      cssProcessor: require('cssnano'), // OptimizeCSSAssetsPlugin插件默认也是使用cssnano
-      cssProcessorOptions: {
-        discardComments: { removeAll: true }
-      }
     }),
     // 提取单独CSS文件
     new MiniCssExtractPlugin({
@@ -433,11 +440,12 @@ const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 ......
 optimization: {
-  usedExports: true,
-  // 压缩js代码
++  usedExports: true,
+  // 开启代码压缩
   minimize: true,
   minimizer: [
-    new TerserWebpackPlugin()
++    new TerserWebpackPlugin()
+    new CssMinimizerPlugin()
   ]
 },
 ```
@@ -507,10 +515,10 @@ export default defineComponent({
 </script>
 ```
 
-修改 index.js 文件
+修改 main.js 文件
 
 ```
-// index.js
+// main.js
 import { createApp } from 'vue';
 import App from './App.vue';
 
