@@ -20,11 +20,6 @@ module.exports = {
     hot: true,
     open: true,
     port: 1024,
-    // eslint报错输出到浏览器
-    // overlay: {
-    //   warnings: true,
-    //   errors: true
-    // }
   },
   plugins: [
     new HtmlWebpackPlugin({
